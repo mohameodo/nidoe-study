@@ -41,4 +41,33 @@ export function formatDistanceToNow(date: Date): string {
   
   const diffInYears = Math.floor(diffInMonths / 12)
   return `${diffInYears} year${diffInYears > 1 ? 's' : ''} ago`
+}
+
+/**
+ * Format a date to a user-friendly string
+ */
+export function formatDate(date: Date): string {
+  const today = new Date()
+  const yesterday = new Date(today)
+  yesterday.setDate(yesterday.getDate() - 1)
+  
+  // Check if date is today
+  if (date.toDateString() === today.toDateString()) {
+    return 'Today'
+  }
+  
+  // Check if date is yesterday
+  if (date.toDateString() === yesterday.toDateString()) {
+    return 'Yesterday'
+  }
+  
+  // Format the date as a readable string
+  const options: Intl.DateTimeFormatOptions = { 
+    weekday: 'long', 
+    month: 'long', 
+    day: 'numeric',
+    year: date.getFullYear() !== today.getFullYear() ? 'numeric' : undefined
+  }
+  
+  return date.toLocaleDateString('en-US', options)
 } 

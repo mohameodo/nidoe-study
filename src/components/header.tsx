@@ -1,11 +1,13 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { ThemeToggle } from "./ui/theme-toggle"
-import { Menu, X, User, LogIn } from "lucide-react"
+import { Menu, X, User, LogIn, Settings, LayoutDashboard, LogOut } from "lucide-react"
 import { useAuth } from "@/components/layouts/ClientRootLayout"
+import { auth } from "@/lib/firebase/config"
+import { signOut } from "firebase/auth"
 
 type NavLink = {
   name: string
@@ -16,6 +18,7 @@ const navLinks: NavLink[] = [
   { name: "Home", href: "/" },
   { name: "Upload", href: "/upload" },
   { name: "Dashboard", href: "/dashboard" },
+  { name: "History", href: "/history" },
   { name: "Explore", href: "/explore" },
   { name: "Support", href: "/support" },
 ]
@@ -24,6 +27,8 @@ export function Header() {
   const pathname = usePathname()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [scrolled, setScrolled] = useState(false)
+  const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
+  const profileMenuRef = useRef<HTMLDivElement>(null)
   const { user, isLoading } = useAuth()
 
   useEffect(() => {
@@ -39,13 +44,40 @@ export function Header() {
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Close profile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (profileMenuRef.current && !profileMenuRef.current.contains(event.target as Node)) {
+        setIsProfileMenuOpen(false)
+      }
+    }
+    
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
   const toggleMenu = () => {
     setIsMenuOpen(!isMenuOpen)
   }
+  
+  const toggleProfileMenu = () => {
+    setIsProfileMenuOpen(!isProfileMenuOpen)
+  }
+  
+  const handleLogout = async () => {
+    try {
+      await signOut(auth)
+      setIsProfileMenuOpen(false)
+    } catch (error) {
+      console.error("Error signing out: ", error)
+    }
+  }
 
   return (
-    <header className={`sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 transition-all ${
-      scrolled ? "shadow-sm" : ""
+    <header className={`sticky top-0 z-50 w-full transition-all ${
+      scrolled 
+        ? "border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 shadow-sm" 
+        : "bg-transparent"
     }`}>
       <div className="container flex h-16 items-center justify-between">
         {/* Logo */}
@@ -79,23 +111,76 @@ export function Header() {
           {!isLoading && (
             <>
               {user ? (
-                <Link
-                  href="/profile"
-                  className="rounded-full border overflow-hidden flex items-center justify-center hover:border-primary transition-colors"
-                  title={user.displayName || user.email || "Profile"}
-                >
-                  {user.photoURL ? (
-                    <img 
-                      src={user.photoURL} 
-                      alt="Profile" 
-                      className="h-8 w-8 object-cover"
-                    />
-                  ) : (
-                    <div className="h-8 w-8 bg-primary/10 flex items-center justify-center">
-                      <User className="h-4 w-4" />
+                <div className="relative" ref={profileMenuRef}>
+                  <button
+                    onClick={toggleProfileMenu}
+                    className="rounded-full border overflow-hidden flex items-center justify-center hover:border-primary transition-colors"
+                    title={user.displayName || user.email || "Profile"}
+                  >
+                    {user.photoURL ? (
+                      <img 
+                        src={user.photoURL} 
+                        alt="Profile" 
+                        className="h-8 w-8 object-cover"
+                      />
+                    ) : (
+                      <div className="h-8 w-8 bg-primary/10 flex items-center justify-center">
+                        <User className="h-4 w-4" />
+                      </div>
+                    )}
+                  </button>
+                  
+                  {/* Profile dropdown menu */}
+                  {isProfileMenuOpen && (
+                    <div className="absolute right-0 mt-2 w-48 bg-card rounded-xl border shadow-md py-1 z-50">
+                      <div className="px-4 py-2 border-b">
+                        <p className="font-medium text-sm truncate">
+                          {user.displayName || "User"}
+                        </p>
+                        <p className="text-xs text-muted-foreground truncate">
+                          {user.email}
+                        </p>
+                      </div>
+                      
+                      <div className="py-1">
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center px-4 py-2 text-sm hover:bg-accent/50 transition-colors"
+                          onClick={() => setIsProfileMenuOpen(false)}
+                        >
+                          <LayoutDashboard className="h-4 w-4 mr-2" />
+                          Dashboard
+                        </Link>
+                        <Link
+                          href="/profile"
+                          className="flex items-center px-4 py-2 text-sm hover:bg-accent/50 transition-colors"
+                          onClick={() => setIsProfileMenuOpen(false)}
+                        >
+                          <User className="h-4 w-4 mr-2" />
+                          Profile
+                        </Link>
+                        <Link
+                          href="/settings"
+                          className="flex items-center px-4 py-2 text-sm hover:bg-accent/50 transition-colors"
+                          onClick={() => setIsProfileMenuOpen(false)}
+                        >
+                          <Settings className="h-4 w-4 mr-2" />
+                          Settings
+                        </Link>
+                      </div>
+                      
+                      <div className="border-t py-1">
+                        <button
+                          onClick={handleLogout}
+                          className="flex w-full items-center px-4 py-2 text-sm text-destructive hover:bg-destructive/10 transition-colors"
+                        >
+                          <LogOut className="h-4 w-4 mr-2" />
+                          Log out
+                        </button>
+                      </div>
                     </div>
                   )}
-                </Link>
+                </div>
               ) : (
                 <Link
                   href="/login"
@@ -154,6 +239,12 @@ export function Header() {
                   >
                     Settings
                   </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="py-2 text-sm font-medium transition-colors hover:text-destructive text-muted-foreground text-left"
+                  >
+                    Log out
+                  </button>
                 </>
               )}
             </nav>

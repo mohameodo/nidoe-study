@@ -72,91 +72,65 @@ export default function DashboardPage() {
   }
   
   return (
-    <div className="container max-w-6xl py-8">
-      <h1 className="text-3xl font-bold mb-6">Your Dashboard</h1>
+    <div className="container max-w-6xl py-4 md:py-8">
+      <h1 className="hidden md:block text-3xl font-bold mb-6">Your Dashboard</h1>
       
-      {/* Stats overview */}
-      <div className="grid grid-cols-1  md:grid-cols-3 gap-4 mb-8">
-        <div className="bg-card rounded-xl border p-4 bordershadow-sm">
-          <div className="flex items-center mb-2">
-            <FileText className="h-5 w-5 text-primary mr-2" />
-            <h3 className="font-medium">Total Quizzes</h3>
+      {/* Stats overview - Combined into one card - Hidden on mobile */}
+      <div className="hidden md:block mb-6">
+        <div className="bg-card rounded-xl border p-6 shadow-sm">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-8">
+            <div className="flex items-center">
+              <div className="relative flex items-center justify-center h-14 w-14 mr-4">
+                <div className="animate-pulse-slow absolute inset-0 rounded-full bg-primary/10"></div>
+                <FileText className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground">Total Quizzes</h3>
+                {isLoading ? (
+                  <div className="animate-pulse h-8 w-12 bg-muted rounded-md" />
+                ) : (
+                  <p className="text-2xl font-bold">{totalQuizzes}</p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <div className="relative flex items-center justify-center h-14 w-14 mr-4">
+                <div className="animate-pulse-slow absolute inset-0 rounded-full bg-primary/10 animation-delay-300"></div>
+                <BarChart3 className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground">Completion Rate</h3>
+                {isLoading ? (
+                  <div className="animate-pulse h-8 w-16 bg-muted rounded-md" />
+                ) : (
+                  <p className="text-2xl font-bold">{completionRate}%</p>
+                )}
+              </div>
+            </div>
+            
+            <div className="flex items-center">
+              <div className="relative flex items-center justify-center h-14 w-14 mr-4">
+                <div className="animate-pulse-slow absolute inset-0 rounded-full bg-primary/10 animation-delay-600"></div>
+                <Clock className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <h3 className="font-medium text-sm text-muted-foreground">Average Score</h3>
+                {isLoading ? (
+                  <div className="animate-pulse h-8 w-16 bg-muted rounded-md" />
+                ) : (
+                  <p className="text-2xl font-bold">{averageScore}</p>
+                )}
+              </div>
+            </div>
           </div>
-          {isLoading ? (
-            <div className="animate-pulse h-8 w-12 bg-muted rounded-md" />
-          ) : (
-            <p className="text-3xl font-bold">{totalQuizzes}</p>
-          )}
-        </div>
-        
-        <div className="bg-card rounded-xl border p-4 shadow-sm">
-          <div className="flex items-center mb-2">
-            <BarChart3 className="h-5 w-5 text-primary mr-2" />
-            <h3 className="font-medium">Completion Rate</h3>
-          </div>
-          {isLoading ? (
-            <div className="animate-pulse h-8 w-16 bg-muted rounded-md" />
-          ) : (
-            <p className="text-3xl font-bold">{completionRate}%</p>
-          )}
-        </div>
-        
-        <div className="bg-card rounded-xl border p-4 shadow-sm">
-          <div className="flex items-center mb-2">
-            <Clock className="h-5 w-5 text-primary mr-2" />
-            <h3 className="font-medium">Average Score</h3>
-          </div>
-          {isLoading ? (
-            <div className="animate-pulse h-8 w-16 bg-muted rounded-md" />
-          ) : (
-            <p className="text-3xl font-bold">{averageScore}</p>
-          )}
         </div>
       </div>
       
-      {/* Tabs for different sections with view controls */}
-      <div className="flex justify-between items-center border-b mb-6 overflow-x-auto">
-        <div className="flex">
-          <button 
-            onClick={() => setActiveTab("quizzes")}
-            className={`px-4 py-2 border-b-2 font-medium text-sm ${
-              activeTab === "quizzes" ? "border-primary" : "border-transparent text-muted-foreground"
-            }`}
-          >
-            Your Quizzes
-          </button>
-          <button
-            onClick={() => setActiveTab("cheatsheet")}
-            className={`px-4 py-2 border-b-2 font-medium text-sm ${
-              activeTab === "cheatsheet" ? "border-primary" : "border-transparent text-muted-foreground"
-            }`}
-          >
-            <FileText className="h-4 w-4 inline mr-2" />
-            Cheat Sheet
-          </button>
-          <button
-            onClick={() => setActiveTab("notes")}
-            className={`px-4 py-2 border-b-2 font-medium text-sm ${
-              activeTab === "notes" ? "border-primary" : "border-transparent text-muted-foreground"
-            }`}
-          >
-            <BookOpen className="h-4 w-4 inline mr-2" />
-            Study Notes
-          </button>
-          <button
-            onClick={() => setActiveTab("insights")}
-            className={`px-4 py-2 border-b-2 font-medium text-sm ${
-              activeTab === "insights" ? "border-primary" : "border-transparent text-muted-foreground"
-            }`}
-          >
-            <Brain className="h-4 w-4 inline mr-2" />
-            AI Insights
-          </button>
-        </div>
-        
-        {/* View controls now inline with tabs */}
-        {activeTab === "quizzes" && (
-          <div className="flex space-x-2 ml-auto">
+      {/* View controls for mobile - above tabs */}
+      {activeTab === "quizzes" && (
+        <div className="md:hidden flex justify-end mb-3">
+          <div className="flex space-x-2">
             <button
               onClick={() => setView("grid")}
               className={`p-2 rounded-md ${view === "grid" ? "bg-primary text-primary-foreground" : "bg-muted"}`}
@@ -172,7 +146,75 @@ export default function DashboardPage() {
               <FileText className="h-4 w-4" />
             </button>
           </div>
-        )}
+        </div>
+      )}
+      
+      {/* Tabs and view controls - reverted to one line for desktop */}
+      <div className="mb-4 border-b">
+        <div className="flex justify-between items-center">
+          {/* Tabs - horizontally scrollable */}
+          <div className="overflow-x-auto scrollbar-none">
+            <div className="flex min-w-max">
+              <button 
+                onClick={() => setActiveTab("quizzes")}
+                className={`px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
+                  activeTab === "quizzes" ? "border-primary" : "border-transparent text-muted-foreground"
+                }`}
+              >
+                Your Quizzes
+              </button>
+              <button
+                onClick={() => setActiveTab("cheatsheet")}
+                className={`px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
+                  activeTab === "cheatsheet" ? "border-primary" : "border-transparent text-muted-foreground"
+                }`}
+              >
+                <FileText className="h-4 w-4 inline mr-2" />
+                Cheat Sheet
+              </button>
+              <button
+                onClick={() => setActiveTab("notes")}
+                className={`px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
+                  activeTab === "notes" ? "border-primary" : "border-transparent text-muted-foreground"
+                }`}
+              >
+                <BookOpen className="h-4 w-4 inline mr-2" />
+                Study Notes
+              </button>
+              <button
+                onClick={() => setActiveTab("insights")}
+                className={`px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
+                  activeTab === "insights" ? "border-primary" : "border-transparent text-muted-foreground"
+                }`}
+              >
+                <Brain className="h-4 w-4 inline mr-2" />
+                AI Insights
+              </button>
+            </div>
+          </div>
+          
+          {/* View controls for desktop */}
+          {activeTab === "quizzes" && (
+            <div className="hidden md:flex">
+              <div className="flex space-x-2">
+                <button
+                  onClick={() => setView("grid")}
+                  className={`p-2 rounded-md ${view === "grid" ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+                  aria-label="Grid view"
+                >
+                  <LayoutGrid className="h-4 w-4" />
+                </button>
+                <button
+                  onClick={() => setView("list")}
+                  className={`p-2 rounded-md ${view === "list" ? "bg-primary text-primary-foreground" : "bg-muted"}`}
+                  aria-label="List view"
+                >
+                  <FileText className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
       
       {/* Loading state */}

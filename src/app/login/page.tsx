@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowLeft, Mail, LogIn, User } from "lucide-react"
-import { auth } from "@/lib/firebase/config"
+import { auth, googleProvider } from "@/lib/firebase/config"
 import { db } from "@/lib/firebase/config"
 import { doc, setDoc } from 'firebase/firestore'
 import { 
@@ -12,7 +12,6 @@ import {
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
   signInWithPopup,
-  GoogleAuthProvider,
   updateProfile,
   User as FirebaseUser
 } from "firebase/auth"
@@ -59,8 +58,7 @@ export default function LoginPage() {
   }, [provider, user, router])
   
   const signInWithGoogle = async () => {
-    const provider = new GoogleAuthProvider()
-    return signInWithPopup(auth, provider)
+    return signInWithPopup(auth, googleProvider)
   }
   
   const handleProviderAuth = async (provider: string) => {
@@ -143,12 +141,6 @@ export default function LoginPage() {
   
   return (
     <div className="container mx-auto px-4 py-12 max-w-md">
-      <div className="mb-8">
-        <Link href="/" className="flex items-center gap-1 text-sm font-medium">
-          <ArrowLeft className="h-4 w-4" /> Back to Home
-        </Link>
-      </div>
-      
       <div className="bg-card rounded-2xl p-8 shadow-sm">
         <div className="text-center mb-8">
           <h1 className="text-2xl font-bold">

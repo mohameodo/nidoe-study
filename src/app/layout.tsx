@@ -16,11 +16,9 @@ export const metadata: Metadata = {
     { media: '(prefers-color-scheme: dark)', color: 'black' },
   ],
   icons: {
-    icon: [
-      { url: '/favicon.png', type: 'image/png' }
-    ],
-    shortcut: '/favicon.png',
-    apple: '/apple-icon.png',
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
   },
 };
 
@@ -30,8 +28,8 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.className} antialiased min-h-screen bg-background text-foreground pb-16 md:pb-0`}>
+    <html lang="en" suppressHydrationWarning className="size-adjustment">
+      <body className={`${inter.className} antialiased min-h-screen bg-background text-foreground pb-12 md:pb-0`}>
         <ClientRootLayout>
           {children}
         </ClientRootLayout>
