@@ -323,8 +323,8 @@ export default function SettingsPage() {
       
       {/* Mobile explanation banner */}
       <div className="md:hidden mt-8 bg-accent/50 rounded-2xl p-6 border text-center">
-        <h2 className="text-lg font-semibold mb-3">Transform Your Study Materials Into Interactive Quizzes</h2>
-        <p className="text-muted-foreground text-sm">
+        <h2 className="text-lg font-semibold mb-3 center-mobile">Transform Your Study Materials Into Interactive Quizzes</h2>
+        <p className="text-muted-foreground text-sm center-mobile mx-auto max-w-xs">
           Upload your study materials and let AI generate custom quizzes, summaries, 
           and study guides tailored to your learning needs.
         </p>

@@ -5,7 +5,16 @@ const urlsToCache = [
   '/',
   '/index.html',
   '/manifest.json',
-  '/favicon.ico'
+  '/favicon.ico',
+  '/favicon.png',
+  '/logo-light.png',
+  '/logo-dark.png',
+  '/apple-touch-icon.png',
+  '/apple-icon.png',
+  '/icons/icon-192x192.png',
+  '/icons/icon-384x384.png',
+  '/icons/icon-512x512.png',
+  '/offline.html'
 ];
 
 // Install event - cache basic assets

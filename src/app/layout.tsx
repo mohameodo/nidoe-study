@@ -19,6 +19,30 @@ export const metadata: Metadata = {
     icon: '/favicon.ico',
     shortcut: '/favicon.ico',
     apple: '/apple-touch-icon.png',
+    other: [
+      {
+        rel: 'apple-icon',
+        url: '/apple-icon.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '192x192',
+        url: '/icons/icon-192x192.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '384x384',
+        url: '/icons/icon-384x384.png',
+      },
+      {
+        rel: 'icon',
+        type: 'image/png',
+        sizes: '512x512',
+        url: '/icons/icon-512x512.png',
+      },
+    ],
   },
   manifest: '/manifest.json',
   applicationName: 'Nidoe',
@@ -46,6 +70,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+        <link rel="mask-icon" href="/favicon.png" color="#000000" />
       </head>
       <body className={`${inter.className} antialiased min-h-screen bg-background text-foreground pb-12 md:pb-0`}>
         <ClientRootLayout>

@@ -126,13 +126,13 @@ export default function Home() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-center mt-12">
-          <div className="space-y-6">
+          <div className="space-y-6 md:text-left text-center">
             <h2 className="text-3xl font-bold">Transform Your Study Materials Into Interactive Quizzes</h2>
             <p className="text-lg">
               Upload your study materials and let AI generate custom quizzes, 
               summaries, and study guides tailored to your learning needs.
             </p>
-            <div className="flex flex-col sm:flex-row gap-4 mt-8">
+            <div className="flex flex-col sm:flex-row gap-4 mt-8 md:justify-start justify-center">
               {user ? (
                 <Link 
                   href="/upload" 

@@ -8,6 +8,8 @@ import { Menu, X, User, LogIn, Settings, LayoutDashboard, LogOut } from "lucide-
 import { useAuth } from "@/components/layouts/ClientRootLayout"
 import { auth } from "@/lib/firebase/config"
 import { signOut } from "firebase/auth"
+import { useTheme } from "next-themes"
+import Image from "next/image"
 
 type NavLink = {
   name: string
@@ -30,6 +32,8 @@ export function Header() {
   const [isProfileMenuOpen, setIsProfileMenuOpen] = useState(false)
   const profileMenuRef = useRef<HTMLDivElement>(null)
   const { user, isLoading } = useAuth()
+  const { theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
     const handleScroll = () => {
@@ -54,6 +58,11 @@ export function Header() {
     
     document.addEventListener('mousedown', handleClickOutside)
     return () => document.removeEventListener('mousedown', handleClickOutside)
+  }, [])
+
+  // Set mounted to true once component is mounted
+  useEffect(() => {
+    setMounted(true)
   }, [])
 
   const toggleMenu = () => {
@@ -83,7 +92,19 @@ export function Header() {
         {/* Logo */}
         <div className="flex items-center">
           <Link href="/" className="flex items-center space-x-2">
-            <span className="font-bold text-xl">Nidoe</span>
+            {mounted ? (
+              <Image 
+                src={theme === "dark" ? "/logo-dark.png" : "/logo-light.png"}
+                alt="Nidoe Logo"
+                width={150}
+                height={50}
+                priority
+                quality={95}
+                className="h-10 w-auto"
+              />
+            ) : (
+              <div className="h-10 w-32 bg-muted/20 animate-pulse rounded"></div>
+            )}
           </Link>
         </div>
         
