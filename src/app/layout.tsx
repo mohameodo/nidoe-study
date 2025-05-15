@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   creator: 'Nidoe',
   themeColor: [
     { media: '(prefers-color-scheme: light)', color: 'white' },
-    { media: '(prefers-color-scheme: dark)', color: 'black' },
+    { media: '(prefers-color-scheme: dark)', color: '#0a0a0a' },
   ],
   icons: {
     icon: '/favicon.ico',
@@ -69,8 +69,8 @@ export default function RootLayout({
       <head>
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-        <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
-        <link rel="mask-icon" href="/favicon.png" color="#000000" />
+        <meta name="theme-color" content="#0a0a0a" media="(prefers-color-scheme: dark)" />
+        <link rel="mask-icon" href="/favicon.png" color="#0a0a0a" />
       </head>
       <body className={`${inter.className} antialiased min-h-screen bg-background text-foreground pb-12 md:pb-0`}>
         <ClientRootLayout>

@@ -91,7 +91,7 @@ export default function BottomBar() {
       "md:hidden fixed bottom-0 left-0 right-0 z-50 transition-transform duration-300",
       isPWA ? "pb-4" : "pb-0",
       theme === "dark" 
-        ? "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/90 border-t border-border" 
+        ? "bg-[#0a0a0a]/95 backdrop-blur supports-[backdrop-filter]:bg-[#0a0a0a]/90 border-t border-[#1a1a1a]" 
         : "bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/80 border-t border-border",
       visible ? "transform-none" : "translate-y-full"
     )}>
