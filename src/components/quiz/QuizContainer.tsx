@@ -407,7 +407,7 @@ export default function QuizContainer({ quiz, onComplete }: QuizContainerProps) 
         {/* Main content rendered behind the overlay */}
         <div className="sticky top-0 z-0 bg-background border-b py-3 flex justify-between items-center w-full">
           <div className="ml-4" />
-          <h1 className="text-xl font-bold text-center">{quiz.title}</h1>
+          <h1 className="text-xl font-bold text-center truncate max-w-md px-2">{quiz.title}</h1>
           <div className="mr-4" />
         </div>
         
@@ -448,7 +448,7 @@ export default function QuizContainer({ quiz, onComplete }: QuizContainerProps) 
           Back
         </button>
         
-        <h1 className="text-xl font-bold text-center">{quiz.title}</h1>
+        <h1 className="text-xl font-bold text-center truncate max-w-md px-2">{quiz.title}</h1>
         
         <button
           onClick={exitQuiz}
@@ -582,7 +582,7 @@ export default function QuizContainer({ quiz, onComplete }: QuizContainerProps) 
             </div>
             
             {/* Navigation */}
-            <div className="flex justify-between items-center">
+            <div className="flex justify-between items-center mt-4 mb-8">
               <button
                 onClick={goToPreviousQuestion}
                 disabled={currentQuestionIndex === 0}

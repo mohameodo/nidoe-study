@@ -9,11 +9,11 @@ type QuizSettings = {
 }
 
 type QuizQuestion = {
-  type: 'multipleChoice';
+  type: string;
   question: string;
   options: string[];
   correctAnswer: number;
-  explanation: string;
+  explanation?: string;
 }
 
 type Quiz = {
@@ -32,9 +32,24 @@ export async function getGeminiQuiz(content: string, settings: QuizSettings): Pr
       throw new Error("Google API key is required. Please set NEXT_PUBLIC_GOOGLE_API_KEY in your environment variables.")
     }
     
-    // Create a title from the content - simplified and shorter
-    const contentPreview = content.substring(0, 25).trim()
-    const title = contentPreview + (contentPreview.length < content.length ? '...' : '')
+    // Create a better title - extract topic from first 50 chars without "Quiz on" prefix
+    let title = '';
+    
+    try {
+      // Get a title from the first paragraph or first 100 chars
+      const firstParagraph = content.split('\n')[0].trim();
+      title = firstParagraph.length > 10 
+        ? firstParagraph.substring(0, Math.min(50, firstParagraph.length)) 
+        : content.substring(0, Math.min(50, content.length));
+      
+      // Add ellipsis if we truncated
+      if (title.length < content.length) {
+        title += '...';
+      }
+    } catch (error) {
+      // Fallback title if extraction fails
+      title = 'Study Quiz';
+    }
     
     // Generate questions one by one to track progress
     const questions: QuizQuestion[] = []
@@ -51,9 +66,18 @@ export async function getGeminiQuiz(content: string, settings: QuizSettings): Pr
     for (let i = 0; i < questionCount; i++) {
       // Construct prompt for this specific question
       const prompt = `
-      Create a multiple-choice question based on the following study material. Make it ${difficulty} difficulty (${difficultyDescription}).
+      Create a single, direct multiple-choice question based on the following study material. Make it ${difficulty} difficulty (${difficultyDescription}).
       
       Study Material: "${content.slice(0, 2000)}${content.length > 2000 ? '...' : ''}"
+      
+      IMPORTANT GUIDELINES:
+      1. Write clear, concise questions - maximum 20 words.
+      2. DO NOT add phrases like "Assuming..." or "Based on the study material...".
+      3. Just ask the question directly.
+      4. Keep answer options extremely brief (1-4 words is ideal).
+      5. DO NOT use Roman numerals (I, II, III) in options.
+      6. Make each answer choice distinct.
+      7. Provide a very brief explanation for the correct answer.
       
       Format your response as a valid JSON object with the following structure:
       {
@@ -156,13 +180,15 @@ export async function getGeminiQuiz(content: string, settings: QuizSettings): Pr
 }
 
 /**
- * Call the Gemini API to get a response
+ * Call the Gemini API with the given prompt
  */
-async function callGeminiApi(prompt: string, apiKey: string): Promise<any> {
-  const url = 'https://generativelanguage.googleapis.com/v1/models/gemini-2.0-flash-lite:generateContent'
-  
+async function callGeminiApi(prompt: string, apiKey: string) {
   try {
-    const response = await fetch(`${url}?key=${apiKey}`, {
+    // For local development, we'll use this placeholder
+    // In a real app, you'd call the actual Gemini API
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`
+
+    const response = await fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -181,35 +207,22 @@ async function callGeminiApi(prompt: string, apiKey: string): Promise<any> {
           temperature: 0.7,
           topK: 40,
           topP: 0.95,
-          maxOutputTokens: 4096,
+          maxOutputTokens: 1024,
         }
       })
-    });
-    
-    const data = await response.json();
-    
+    })
+
     if (!response.ok) {
-      throw new Error(data.error?.message || 'Error calling Gemini API');
+      throw new Error(`API call failed with status: ${response.status}`)
     }
-    
-    // Extract the text from the response
-    if (data.candidates && data.candidates[0] && data.candidates[0].content && 
-        data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
-      const textContent = data.candidates[0].content.parts[0].text;
-      
-      // Try to parse as JSON
-      try {
-        return JSON.parse(textContent);
-      } catch (e) {
-        // Return as string if not valid JSON
-        return textContent;
-      }
-    }
-    
-    throw new Error('Invalid response structure from Gemini API');
+
+    const data = await response.json()
+    const resultText = data.candidates[0].content.parts[0].text
+
+    return resultText
   } catch (error) {
-    console.error("Gemini API call failed:", error);
-    throw error;
+    console.error('Error calling Gemini API:', error)
+    throw error
   }
 }
 
@@ -220,8 +233,20 @@ function generateMockQuiz(content: string, settings: QuizSettings): Quiz {
   const { difficulty, questionCount, onProgress } = settings
   
   // Create a simple title from the first few words of the content
-  const contentPreview = content.substring(0, 25).trim()
-  const title = contentPreview + (contentPreview.length < content.length ? '...' : '')
+  let title = '';
+  try {
+    const firstParagraph = content.split('\n')[0].trim();
+    title = firstParagraph.length > 10 
+      ? firstParagraph.substring(0, Math.min(50, firstParagraph.length)) 
+      : content.substring(0, Math.min(50, content.length));
+    
+    // Add ellipsis if we truncated
+    if (title.length < content.length) {
+      title += '...';
+    }
+  } catch (error) {
+    title = 'Study Quiz';
+  }
   
   // Generate mock questions based on settings
   const questions: QuizQuestion[] = []

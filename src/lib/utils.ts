@@ -12,6 +12,11 @@ export function cn(...inputs: ClassValue[]) {
  * Format a date to a human-readable string showing how long ago it was
  */
 export function formatDistanceToNow(date: Date): string {
+  // Check if date is valid
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    return 'unknown time ago';
+  }
+  
   const now = new Date()
   const diffInSeconds = Math.floor((now.getTime() - date.getTime()) / 1000)
   
@@ -46,13 +51,18 @@ export function formatDistanceToNow(date: Date): string {
 /**
  * Format time spent in seconds to a readable string
  */
-export function formatTimeSpent(seconds: number): string {
+export function formatTimeSpent(seconds?: number): string {
+  // Handle undefined, null, or invalid time
+  if (seconds === undefined || seconds === null || isNaN(seconds) || seconds < 0) {
+    return '0 sec';
+  }
+  
   if (seconds < 60) {
-    return `${seconds} sec`
+    return `${Math.floor(seconds)} sec`
   }
   
   const minutes = Math.floor(seconds / 60)
-  const remainingSeconds = seconds % 60
+  const remainingSeconds = Math.floor(seconds % 60)
   
   if (minutes < 60) {
     return remainingSeconds > 0 
@@ -72,6 +82,11 @@ export function formatTimeSpent(seconds: number): string {
  * Format a date to a user-friendly string
  */
 export function formatDate(date: Date): string {
+  // Check if date is valid
+  if (!(date instanceof Date) || isNaN(date.getTime())) {
+    return 'Unknown date';
+  }
+  
   const today = new Date()
   const yesterday = new Date(today)
   yesterday.setDate(yesterday.getDate() - 1)

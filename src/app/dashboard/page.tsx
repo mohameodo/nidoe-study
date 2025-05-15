@@ -82,8 +82,8 @@ export default function DashboardPage() {
           isGrid ? "p-5" : "p-4 flex justify-between items-center"
         }`}
       >
-        <div className={isGrid ? "" : "flex-1"}>
-          <h3 className={`font-medium ${isGrid ? "mb-2 line-clamp-2" : ""}`}>{quiz.title}</h3>
+        <div className={isGrid ? "" : "flex-1 mr-4"}>
+          <h3 className={`font-medium truncate ${isGrid ? "mb-2 line-clamp-2" : "max-w-[200px] md:max-w-none"}`}>{quiz.title}</h3>
           
           <div className={`text-sm text-muted-foreground ${isGrid ? "mb-4" : ""}`}>
             {quiz.completed ? (
