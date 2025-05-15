@@ -44,6 +44,31 @@ export function formatDistanceToNow(date: Date): string {
 }
 
 /**
+ * Format time spent in seconds to a readable string
+ */
+export function formatTimeSpent(seconds: number): string {
+  if (seconds < 60) {
+    return `${seconds} sec`
+  }
+  
+  const minutes = Math.floor(seconds / 60)
+  const remainingSeconds = seconds % 60
+  
+  if (minutes < 60) {
+    return remainingSeconds > 0 
+      ? `${minutes}m ${remainingSeconds}s` 
+      : `${minutes}m`
+  }
+  
+  const hours = Math.floor(minutes / 60)
+  const remainingMinutes = minutes % 60
+  
+  return remainingMinutes > 0 
+    ? `${hours}h ${remainingMinutes}m` 
+    : `${hours}h`
+}
+
+/**
  * Format a date to a user-friendly string
  */
 export function formatDate(date: Date): string {

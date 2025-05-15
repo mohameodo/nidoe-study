@@ -32,9 +32,9 @@ export async function getGeminiQuiz(content: string, settings: QuizSettings): Pr
       throw new Error("Google API key is required. Please set NEXT_PUBLIC_GOOGLE_API_KEY in your environment variables.")
     }
     
-    // Create a title from the content
-    const contentPreview = content.substring(0, 40).trim()
-    const title = `Quiz on "${contentPreview}${contentPreview.length < content.length ? '...' : ''}"` 
+    // Create a title from the content - simplified and shorter
+    const contentPreview = content.substring(0, 25).trim()
+    const title = contentPreview + (contentPreview.length < content.length ? '...' : '')
     
     // Generate questions one by one to track progress
     const questions: QuizQuestion[] = []
@@ -220,8 +220,8 @@ function generateMockQuiz(content: string, settings: QuizSettings): Quiz {
   const { difficulty, questionCount, onProgress } = settings
   
   // Create a simple title from the first few words of the content
-  const contentPreview = content.substring(0, 40).trim()
-  const title = `Quiz on "${contentPreview}${contentPreview.length < content.length ? '...' : ''}"` 
+  const contentPreview = content.substring(0, 25).trim()
+  const title = contentPreview + (contentPreview.length < content.length ? '...' : '')
   
   // Generate mock questions based on settings
   const questions: QuizQuestion[] = []

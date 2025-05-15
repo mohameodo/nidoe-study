@@ -8,7 +8,7 @@ import { useUserCollection } from "@/lib/hooks/use-firestore"
 import { orderBy } from "firebase/firestore"
 import { EmptyState } from "@/components/ui/empty-state"
 import { QuizCardSkeleton } from "@/components/ui/skeleton"
-import { formatDistanceToNow } from "@/lib/utils"
+import { formatDistanceToNow, formatTimeSpent } from "@/lib/utils"
 import { auth } from "@/lib/firebase/config"
 import { onAuthStateChanged, User } from "firebase/auth"
 
@@ -69,6 +69,83 @@ export default function DashboardPage() {
   if (!authLoading && !user) {
     router.push('/login')
     return null
+  }
+  
+  // QuizCard component
+  function QuizCard({ quiz, view }: { quiz: QuizData, view: "grid" | "list" }) {
+    const isGrid = view === "grid"
+    
+    return (
+      <Link 
+        href={`/quiz/${quiz.id}`} 
+        className={`bg-card rounded-xl border hover:shadow-md transition-shadow ${
+          isGrid ? "p-5" : "p-4 flex justify-between items-center"
+        }`}
+      >
+        <div className={isGrid ? "" : "flex-1"}>
+          <h3 className={`font-medium ${isGrid ? "mb-2 line-clamp-2" : ""}`}>{quiz.title}</h3>
+          
+          <div className={`text-sm text-muted-foreground ${isGrid ? "mb-4" : ""}`}>
+            {quiz.completed ? (
+              <div className="flex items-center">
+                <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
+                Completed
+              </div>
+            ) : (
+              <div className="flex items-center">
+                <span className="inline-block w-2 h-2 rounded-full bg-orange-500 mr-2"></span>
+                In Progress
+              </div>
+            )}
+          </div>
+          
+          {isGrid && (
+            <div className="mt-2 flex justify-between items-center text-sm">
+              <span className="bg-muted px-2 py-1 rounded text-xs">
+                {quiz.difficulty}
+              </span>
+              <span className="text-xs">
+                {formatDistanceToNow(new Date(quiz.createdAt))}
+              </span>
+            </div>
+          )}
+        </div>
+        
+        <div className={isGrid ? "flex items-center justify-between mt-3 pt-3 border-t" : "flex-shrink-0 flex items-center"}>
+          {quiz.completed && quiz.results ? (
+            <div className="text-sm">
+              <span className="font-medium">
+                {quiz.results.score}/{quiz.results.totalQuestions}
+              </span>
+              {!isGrid && (
+                <>
+                  <span className="text-muted-foreground ml-2">
+                    {formatTimeSpent(quiz.results.timeSpent)}
+                  </span>
+                  <span className="text-muted-foreground ml-2">
+                    {formatDistanceToNow(new Date(quiz.createdAt))}
+                  </span>
+                </>
+              )}
+            </div>
+          ) : (
+            <div className="text-sm">
+              <span>{quiz.questionCount} questions</span>
+            </div>
+          )}
+          
+          <ChevronRight className="h-4 w-4 ml-2 text-muted-foreground" />
+        </div>
+        
+        {/* Add time spent for grid view */}
+        {isGrid && quiz.completed && quiz.results && quiz.results.timeSpent && (
+          <div className="mt-2 text-xs text-muted-foreground flex items-center">
+            <Clock className="h-3 w-3 mr-1" />
+            {formatTimeSpent(quiz.results.timeSpent)}
+          </div>
+        )}
+      </Link>
+    )
   }
   
   return (
@@ -153,11 +230,11 @@ export default function DashboardPage() {
       <div className="mb-4 border-b">
         <div className="flex justify-between items-center">
           {/* Tabs - horizontally scrollable */}
-          <div className="overflow-x-auto scrollbar-none">
-            <div className="flex min-w-max">
+          <div className="overflow-x-auto scrollbar-none w-full">
+            <div className="flex min-w-max space-x-1 md:space-x-2">
               <button 
                 onClick={() => setActiveTab("quizzes")}
-                className={`px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
+                className={`px-3 md:px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
                   activeTab === "quizzes" ? "border-primary" : "border-transparent text-muted-foreground"
                 }`}
               >
@@ -165,29 +242,29 @@ export default function DashboardPage() {
               </button>
               <button
                 onClick={() => setActiveTab("cheatsheet")}
-                className={`px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
+                className={`px-3 md:px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
                   activeTab === "cheatsheet" ? "border-primary" : "border-transparent text-muted-foreground"
                 }`}
               >
-                <FileText className="h-4 w-4 inline mr-2" />
+                <FileText className="h-4 w-4 inline mr-1 md:mr-2" />
                 Cheat Sheet
               </button>
               <button
                 onClick={() => setActiveTab("notes")}
-                className={`px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
+                className={`px-3 md:px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
                   activeTab === "notes" ? "border-primary" : "border-transparent text-muted-foreground"
                 }`}
               >
-                <BookOpen className="h-4 w-4 inline mr-2" />
+                <BookOpen className="h-4 w-4 inline mr-1 md:mr-2" />
                 Study Notes
               </button>
               <button
                 onClick={() => setActiveTab("insights")}
-                className={`px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
+                className={`px-3 md:px-4 py-2 border-b-2 whitespace-nowrap font-medium text-sm ${
                   activeTab === "insights" ? "border-primary" : "border-transparent text-muted-foreground"
                 }`}
               >
-                <Brain className="h-4 w-4 inline mr-2" />
+                <Brain className="h-4 w-4 inline mr-1 md:mr-2" />
                 AI Insights
               </button>
             </div>
@@ -195,7 +272,7 @@ export default function DashboardPage() {
           
           {/* View controls for desktop */}
           {activeTab === "quizzes" && (
-            <div className="hidden md:flex">
+            <div className="hidden md:flex ml-2">
               <div className="flex space-x-2">
                 <button
                   onClick={() => setView("grid")}
@@ -343,68 +420,5 @@ export default function DashboardPage() {
         </div>
       )}
     </div>
-  )
-}
-
-function QuizCard({ quiz, view }: { quiz: QuizData, view: "grid" | "list" }) {
-  const isGrid = view === "grid"
-  
-  return (
-    <Link 
-      href={`/quiz/${quiz.id}`} 
-      className={`bg-card rounded-xl border hover:shadow-md transition-shadow ${
-        isGrid ? "p-5" : "p-4 flex justify-between items-center"
-      }`}
-    >
-      <div className={isGrid ? "" : "flex-1"}>
-        <h3 className={`font-medium ${isGrid ? "mb-2 line-clamp-2" : ""}`}>{quiz.title}</h3>
-        
-        <div className={`text-sm text-muted-foreground ${isGrid ? "mb-4" : ""}`}>
-          {quiz.completed ? (
-            <div className="flex items-center">
-              <span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-2"></span>
-              Completed
-            </div>
-          ) : (
-            <div className="flex items-center">
-              <span className="inline-block w-2 h-2 rounded-full bg-orange-500 mr-2"></span>
-              In Progress
-            </div>
-          )}
-        </div>
-        
-        {isGrid && (
-          <div className="mt-2 flex justify-between items-center text-sm">
-            <span className="bg-muted px-2 py-1 rounded text-xs">
-              {quiz.difficulty}
-            </span>
-            <span className="text-xs">
-              {formatDistanceToNow(new Date(quiz.createdAt))}
-            </span>
-          </div>
-        )}
-      </div>
-      
-      <div className={isGrid ? "flex items-center justify-between mt-3 pt-3 border-t" : "flex-shrink-0 flex items-center"}>
-        {quiz.completed && quiz.results ? (
-          <div className="text-sm">
-            <span className="font-medium">
-              {quiz.results.score}/{quiz.results.totalQuestions}
-            </span>
-            {!isGrid && (
-              <span className="text-muted-foreground ml-2">
-                {formatDistanceToNow(new Date(quiz.createdAt))}
-              </span>
-            )}
-          </div>
-        ) : (
-          <div className="text-sm">
-            <span>{quiz.questionCount} questions</span>
-          </div>
-        )}
-        
-        <ChevronRight className="h-4 w-4 ml-2 text-muted-foreground" />
-      </div>
-    </Link>
   )
 } 

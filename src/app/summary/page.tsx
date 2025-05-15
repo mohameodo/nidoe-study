@@ -254,12 +254,7 @@ export default function SummaryPage() {
   return (
     <div className="container max-w-4xl py-8 mx-auto">
       {/* Ad slot (placeholder) */}
-      <div className="mb-8 p-4 bg-card rounded-lg border border-dashed border-muted-foreground/50 flex items-center justify-center">
-        <div className="text-center text-muted-foreground">
-          <p className="text-xs">ADVERTISEMENT</p>
-          <p className="text-sm">Your ad could be here</p>
-        </div>
-      </div>
+  
       
       <div className="flex justify-between items-center mb-8">
         <Link
