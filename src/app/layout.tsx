@@ -20,6 +20,19 @@ export const metadata: Metadata = {
     shortcut: '/favicon.ico',
     apple: '/apple-touch-icon.png',
   },
+  manifest: '/manifest.json',
+  applicationName: 'Nidoe',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'default',
+    title: 'Nidoe',
+  },
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    maximumScale: 1,
+    userScalable: false,
+  },
 };
 
 export default function RootLayout({
@@ -29,10 +42,32 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning className="size-adjustment">
+      <head>
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
+        <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
+      </head>
       <body className={`${inter.className} antialiased min-h-screen bg-background text-foreground pb-12 md:pb-0`}>
         <ClientRootLayout>
           {children}
         </ClientRootLayout>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              if ('serviceWorker' in navigator) {
+                window.addEventListener('load', () => {
+                  navigator.serviceWorker.register('/sw.js')
+                    .then(registration => {
+                      console.log('Service Worker registered with scope:', registration.scope);
+                    })
+                    .catch(error => {
+                      console.error('Service Worker registration failed:', error);
+                    });
+                });
+              }
+            `,
+          }}
+        />
       </body>
     </html>
   );

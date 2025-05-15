@@ -25,6 +25,16 @@
     .icon, .icon svg {
       transform: none !important;
     }
+    
+    /* Center content on important sections */
+    .center-mobile {
+      @apply text-center flex flex-col items-center;
+    }
+    
+    /* Banner text for mobile */
+    .mobile-banner {
+      @apply text-center p-4 rounded-xl bg-accent/50 my-4 text-sm;
+    }
   }
 }
 
@@ -131,6 +141,31 @@
   html, body {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;     /* Firefox */
+  }
+  
+  /* Settings page specific styles */
+  .settings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  /* Toggle switch styles */
+  .toggle-switch {
+    @apply relative inline-flex h-6 w-11 items-center rounded-full bg-muted transition-colors focus:outline-none;
+  }
+  
+  .toggle-switch[data-state="checked"] {
+    @apply bg-primary;
+  }
+  
+  .toggle-switch-thumb {
+    @apply block h-5 w-5 rounded-full bg-background transition-transform;
+    transform: translateX(2px);
+  }
+  
+  .toggle-switch[data-state="checked"] .toggle-switch-thumb {
+    transform: translateX(19px);
   }
 }
 
