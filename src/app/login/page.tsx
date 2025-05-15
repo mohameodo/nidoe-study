@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import Link from "next/link"
 import { useRouter, useSearchParams } from "next/navigation"
-import { ArrowLeft, Mail, Github, LogIn, User } from "lucide-react"
+import { ArrowLeft, Mail, LogIn, User } from "lucide-react"
 import { auth } from "@/lib/firebase/config"
 import { db } from "@/lib/firebase/config"
 import { doc, setDoc } from 'firebase/firestore'
@@ -182,14 +182,6 @@ export default function LoginPage() {
         
         {/* Social sign-in options */}
         <div className="flex flex-col gap-3 mb-6">
-          <button 
-            onClick={() => handleProviderAuth('github')}
-            disabled={loading}
-            className="w-full flex items-center justify-center gap-2 rounded-xl border bg-background py-3 font-medium transition-colors hover:bg-accent/50 disabled:opacity-50"
-          >
-            <Github className="h-4 w-4" />
-            Continue with GitHub
-          </button>
           <button 
             onClick={() => handleProviderAuth('google')}
             disabled={loading}
