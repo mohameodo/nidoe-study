@@ -16,7 +16,7 @@
     
     /* Adjust spacing for mobile */
     body {
-      font-size: 95%;
+      font-size: 94%;
     }
     
     /* Keep icon sizes consistent */
@@ -34,6 +34,18 @@
     /* Banner text for mobile */
     .mobile-banner {
       @apply text-center p-4 rounded-xl bg-accent/50 my-4 text-sm;
+    }
+    
+    /* PWA mode specific styles */
+    @media (display-mode: standalone) {
+      .pwa-pb {
+        padding-bottom: 5rem !important;
+      }
+      
+      .pwa-bottom-bar {
+        height: 4.5rem;
+        padding-bottom: 1.25rem;
+      }
     }
   }
 }
@@ -113,7 +125,7 @@
   /* Mobile-only scaling */
   @media (max-width: 768px) {
     html {
-      font-size: 95%;
+      font-size: 94%;
     }
   }
   

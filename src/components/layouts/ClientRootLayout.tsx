@@ -28,6 +28,7 @@ export default function ClientRootLayout({
 }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isPWA, setIsPWA] = useState(false);
   const pathname = usePathname();
   
   // Determine if we're on a quiz page
@@ -38,6 +39,20 @@ export default function ClientRootLayout({
       setUser(user);
       setIsLoading(false);
     });
+
+    // Check if the app is running in PWA mode
+    if (typeof window !== 'undefined') {
+      const isInStandaloneMode = window.matchMedia('(display-mode: standalone)').matches 
+        || (window.navigator as any).standalone 
+        || document.referrer.includes('android-app://');
+      
+      setIsPWA(isInStandaloneMode);
+      
+      // Add a class to the body element if in PWA mode
+      if (isInStandaloneMode) {
+        document.body.classList.add('pwa-mode');
+      }
+    }
 
     return () => unsubscribe();
   }, []);
@@ -52,7 +67,9 @@ export default function ClientRootLayout({
       <AuthContext.Provider value={{ user, isLoading }}>
         <SettingsProvider>
           {!isQuizPage && <Header />}
-          <main className={`flex-1 ${isQuizPage ? 'pb-0' : ''}`}>{children}</main>
+          <main className={`flex-1 ${isQuizPage ? 'pb-0' : isPWA ? 'pb-20 md:pb-0' : 'pb-16 md:pb-0'}`}>
+            {children}
+          </main>
           {!isQuizPage && <BottomBar />}
         </SettingsProvider>
       </AuthContext.Provider>
