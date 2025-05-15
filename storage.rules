@@ -1,0 +1,31 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    // Allow authenticated users to read and write their own files
+    match /users/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to read and write quiz content
+    match /quizzes/{quizId}/{allPaths=**} {
+      allow create: if request.auth != null;
+      allow read: if request.auth != null;
+      allow update, delete: if request.auth != null && request.resource.metadata.userId == request.auth.uid;
+    }
+    
+    // Allow PDF uploads for quiz generation
+    match /uploads/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow temporary files storage for processing
+    match /temp/{userId}/{allPaths=**} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // For test/development purposes (remove in production)
+    match /{allPaths=**} {
+      allow read, write: if request.auth != null;
+    }
+  }
+} 
