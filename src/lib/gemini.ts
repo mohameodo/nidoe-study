@@ -184,9 +184,7 @@ export async function getGeminiQuiz(content: string, settings: QuizSettings): Pr
  */
 async function callGeminiApi(prompt: string, apiKey: string) {
   try {
-    // For local development, we'll use this placeholder
-    // In a real app, you'd call the actual Gemini API
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`
+    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`
 
     const response = await fetch(url, {
       method: 'POST',
@@ -213,11 +211,17 @@ async function callGeminiApi(prompt: string, apiKey: string) {
     })
 
     if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      console.error('Gemini API error details:', errorData);
       throw new Error(`API call failed with status: ${response.status}`)
     }
 
     const data = await response.json()
-    const resultText = data.candidates[0].content.parts[0].text
+    const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text
+
+    if (!resultText) {
+      throw new Error('Invalid response format from Gemini API')
+    }
 
     return resultText
   } catch (error) {
@@ -317,4 +321,4 @@ async function callGeminiApi(prompt: string, apiKey: string): Promise<any> {
   
   return data
 }
-*/ 
+*/
