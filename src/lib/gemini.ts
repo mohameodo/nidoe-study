@@ -184,8 +184,11 @@ export async function getGeminiQuiz(content: string, settings: QuizSettings): Pr
  */
 async function callGeminiApi(prompt: string, apiKey: string) {
   try {
-    const url = `https://generativelanguage.googleapis.com/v1/models/gemini-pro:generateContent?key=${apiKey}`
+    // Make sure we have the full URL with https:// protocol
+    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=${apiKey}`
 
+    console.log('Calling Gemini API with URL:', url.replace(apiKey, '[REDACTED]'));
+    
     const response = await fetch(url, {
       method: 'POST',
       headers: {
@@ -213,13 +216,18 @@ async function callGeminiApi(prompt: string, apiKey: string) {
     if (!response.ok) {
       const errorData = await response.json().catch(() => ({}));
       console.error('Gemini API error details:', errorData);
-      throw new Error(`API call failed with status: ${response.status}`)
+      throw new Error(`API call failed with status: ${response.status}. URL: ${url.replace(apiKey, '[REDACTED]')}`)
     }
 
     const data = await response.json()
+    
+    // Debug response structure
+    console.log('Gemini API response structure:', JSON.stringify(data).substring(0, 200) + '...');
+    
     const resultText = data.candidates?.[0]?.content?.parts?.[0]?.text
 
     if (!resultText) {
+      console.error('Invalid response format:', data);
       throw new Error('Invalid response format from Gemini API')
     }
 
